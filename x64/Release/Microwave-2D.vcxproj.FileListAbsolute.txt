@@ -1,0 +1,4 @@
+C:\Users\User\source\repos\Microwave-2D\x64\Release\glew32.dll
+C:\Users\User\source\repos\Microwave-2D\Microwave-2D\x64\Release\Microwave-2D.vcxproj.MdMergeInputs.cache
+C:\Users\User\source\repos\Microwave-2D\Microwave-2D\x64\Release\Microwave-2D.vcxproj.cppwinrt_plat.cache
+C:\Users\User\source\repos\Microwave-2D\Microwave-2D\x64\Release\Microwave-2D.vcxproj.cppwinrt_comp.cache

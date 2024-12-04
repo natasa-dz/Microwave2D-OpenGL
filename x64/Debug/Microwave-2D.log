@@ -1,0 +1,14 @@
+﻿Main.obj : error LNK2019: unresolved external symbol __imp_glBlendFunc referenced in function main
+Main.obj : error LNK2019: unresolved external symbol __imp_glClear referenced in function main
+Main.obj : error LNK2019: unresolved external symbol __imp_glClearColor referenced in function main
+Main.obj : error LNK2019: unresolved external symbol __imp_glDrawElements referenced in function main
+Main.obj : error LNK2019: unresolved external symbol __imp_glEnable referenced in function main
+texture.obj : error LNK2019: unresolved external symbol __imp_glBindTexture referenced in function "public: __cdecl Texture::Texture(char const *,unsigned int,unsigned int,unsigned int,unsigned int)" (??0Texture@@QEAA@PEBDIIII@Z)
+texture.obj : error LNK2019: unresolved external symbol __imp_glDeleteTextures referenced in function "public: void __cdecl Texture::Delete(void)" (?Delete@Texture@@QEAAXXZ)
+texture.obj : error LNK2019: unresolved external symbol __imp_glGenTextures referenced in function "public: __cdecl Texture::Texture(char const *,unsigned int,unsigned int,unsigned int,unsigned int)" (??0Texture@@QEAA@PEBDIIII@Z)
+texture.obj : error LNK2019: unresolved external symbol __imp_glTexImage2D referenced in function "public: __cdecl Texture::Texture(char const *,unsigned int,unsigned int,unsigned int,unsigned int)" (??0Texture@@QEAA@PEBDIIII@Z)
+texture.obj : error LNK2019: unresolved external symbol __imp_glTexParameteri referenced in function "public: __cdecl Texture::Texture(char const *,unsigned int,unsigned int,unsigned int,unsigned int)" (??0Texture@@QEAA@PEBDIIII@Z)
+texture.obj : error LNK2019: unresolved external symbol stbi_load referenced in function "public: __cdecl Texture::Texture(char const *,unsigned int,unsigned int,unsigned int,unsigned int)" (??0Texture@@QEAA@PEBDIIII@Z)
+texture.obj : error LNK2019: unresolved external symbol stbi_image_free referenced in function "public: __cdecl Texture::Texture(char const *,unsigned int,unsigned int,unsigned int,unsigned int)" (??0Texture@@QEAA@PEBDIIII@Z)
+texture.obj : error LNK2019: unresolved external symbol stbi_set_flip_vertically_on_load referenced in function "public: __cdecl Texture::Texture(char const *,unsigned int,unsigned int,unsigned int,unsigned int)" (??0Texture@@QEAA@PEBDIIII@Z)
+C:\Users\User\source\repos\Microwave-2D\x64\Debug\Microwave-2D.exe : fatal error LNK1120: 13 unresolved externals
