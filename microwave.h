@@ -10,7 +10,20 @@ enum class MicrowaveState {
 	IDLE,       // Microwave is on but not running (e.g., waiting for user input)
 	COOKING,    // Microwave is actively cooking
 	PAUSED,     // Microwave cooking is paused
+	DONE,		// Microwave is done with the task (finished)
 	ERROR       // Microwave encountered an error (e.g., overheating or malfunction)
+};
+
+// Struct to hold smoke properties
+struct Smoke {
+	float opacity; // Opacity of the smoke
+	float positionY; // Position of the smoke (how high it is)
+
+	void update() {
+		opacity -= 0.01f; // Gradually reduce opacity to make it more transparent
+		if (opacity < 0.0f) opacity = 0.0f; // Ensure opacity doesn't go below 0
+		positionY += 0.02f; // Move the smoke upwards
+	}
 };
 
 enum ButtonType {
@@ -18,7 +31,12 @@ enum ButtonType {
 	STOP,
 	RESET
 };
-void checkButtonClick(GLFWwindow* window, MicrowaveState& microwaveState, DoorState doorState);
-void keypadPressed(GLFWwindow* window);
+
+void breakMicrowaveAndStartSmoke(GLFWwindow* window, MicrowaveState& microwaveState, Smoke& smoke);
+void handleMicrowaveLogic(GLFWwindow* window, MicrowaveState& microwaveState, DoorState& doorState,
+	std::string& timer, bool& isLampOn);
+void updateTimer(std::string& timer, int num);
+void countdownTimer(MicrowaveState& microwaveState, std::string& timer);
+bool updateTimer(std::string& timer);
 
 #endif

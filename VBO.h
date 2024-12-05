@@ -12,6 +12,8 @@ public:
 	void Bind();
 	void Unbind();
 	void Delete();
+
+	VBO();
 };
 
 #endif
