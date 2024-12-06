@@ -4,8 +4,8 @@
 #include<GL/glew.h>
 #include"shader.h"
 
-#include <ft2build.h>
-#include FT_FREETYPE_H
+//#include <ft2build.h>
+//#include FT_FREETYPE_H
 
 class Texture
 {
@@ -15,6 +15,7 @@ public:
 	Texture();
 	void texUnit(Shader& shader, const char* uniform, GLuint unit);
 	Texture(const char* image, GLenum texType, GLenum slot, GLenum format, GLenum pixelType);
+	//Texture(FT_Bitmap& bitmap, GLenum texType, GLenum slot);
 
 	void assignUnit(Shader& shader, const char* uniform, GLuint unit);
 

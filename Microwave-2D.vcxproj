@@ -120,6 +120,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>"C:\Users\User\source\repos\Microwave-2D\packages\freetype.2.8.0.1\build\native\include"</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -136,17 +137,26 @@
     <None Include="door.vert" />
     <None Include="glass.frag" />
     <None Include="glass.vert" />
+    <None Include="indicator.frag" />
+    <None Include="indicator.vert" />
+    <None Include="light.frag" />
+    <None Include="light.vert" />
+    <None Include="lightning.frag" />
+    <None Include="lightning.vert" />
     <None Include="packages.config" />
     <None Include="smoke.frag" />
     <None Include="smoke.vert" />
+    <None Include="text.frag" />
+    <None Include="text.vert" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="door.cpp" />
     <ClCompile Include="EBO.cpp" />
-    <ClCompile Include="keyboard.cpp" />
+    <ClCompile Include="microwave.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="shaders.cpp" />
     <ClCompile Include="stb.cpp" />
+    <ClCompile Include="text.cpp" />
     <ClCompile Include="texture.cpp" />
     <ClCompile Include="VAO.cpp" />
     <ClCompile Include="VBO.cpp" />
@@ -157,6 +167,7 @@
     <ClInclude Include="main.h" />
     <ClInclude Include="microwave.h" />
     <ClInclude Include="shader.h" />
+    <ClInclude Include="text.h" />
     <ClInclude Include="texture.h" />
     <ClInclude Include="VAO.h" />
     <ClInclude Include="VBO.h" />
@@ -165,16 +176,19 @@
     <Image Include="..\images\alu_inside.jpg" />
     <Image Include="..\images\bg2.jpeg" />
     <Image Include="..\images\food_plate.png" />
+    <Image Include="..\images\ime_prezime.png" />
     <Image Include="..\images\keyboard_sharp.png" />
-    <Image Include="..\images\light_off.jpg" />
-    <Image Include="..\images\light_on.jpg" />
     <Image Include="..\images\sharp_doors.png" />
+    <Image Include="..\images\smoke.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="..\packages\glfw.3.4.0\build\native\glfw.targets" Condition="Exists('..\packages\glfw.3.4.0\build\native\glfw.targets')" />
     <Import Project="..\packages\glew-2.2.0.2.2.0.1\build\native\glew-2.2.0.targets" Condition="Exists('..\packages\glew-2.2.0.2.2.0.1\build\native\glew-2.2.0.targets')" />
     <Import Project="..\packages\Microsoft.Windows.CppWinRT.2.0.220531.1\build\native\Microsoft.Windows.CppWinRT.targets" Condition="Exists('..\packages\Microsoft.Windows.CppWinRT.2.0.220531.1\build\native\Microsoft.Windows.CppWinRT.targets')" />
+    <Import Project="..\packages\glm.1.0.1\build\native\glm.targets" Condition="Exists('..\packages\glm.1.0.1\build\native\glm.targets')" />
+    <Import Project="..\packages\freetype.redist.2.8.0.1\build\native\freetype.redist.targets" Condition="Exists('..\packages\freetype.redist.2.8.0.1\build\native\freetype.redist.targets')" />
+    <Import Project="..\packages\freetype.2.8.0.1\build\native\freetype.targets" Condition="Exists('..\packages\freetype.2.8.0.1\build\native\freetype.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
@@ -184,5 +198,8 @@
     <Error Condition="!Exists('..\packages\glew-2.2.0.2.2.0.1\build\native\glew-2.2.0.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\glew-2.2.0.2.2.0.1\build\native\glew-2.2.0.targets'))" />
     <Error Condition="!Exists('..\packages\Microsoft.Windows.CppWinRT.2.0.220531.1\build\native\Microsoft.Windows.CppWinRT.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Windows.CppWinRT.2.0.220531.1\build\native\Microsoft.Windows.CppWinRT.props'))" />
     <Error Condition="!Exists('..\packages\Microsoft.Windows.CppWinRT.2.0.220531.1\build\native\Microsoft.Windows.CppWinRT.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Windows.CppWinRT.2.0.220531.1\build\native\Microsoft.Windows.CppWinRT.targets'))" />
+    <Error Condition="!Exists('..\packages\glm.1.0.1\build\native\glm.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\glm.1.0.1\build\native\glm.targets'))" />
+    <Error Condition="!Exists('..\packages\freetype.redist.2.8.0.1\build\native\freetype.redist.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\freetype.redist.2.8.0.1\build\native\freetype.redist.targets'))" />
+    <Error Condition="!Exists('..\packages\freetype.2.8.0.1\build\native\freetype.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\freetype.2.8.0.1\build\native\freetype.targets'))" />
   </Target>
 </Project>

@@ -175,6 +175,12 @@ void handleMicrowaveLogic(GLFWwindow* window, MicrowaveState& microwaveState, Do
                 wasMousePressed = true;
                 std::string keypadClicked =  std::string(button.label);  // Explicit conversion, but not required
 
+				if(microwaveState == MicrowaveState::ERROR)
+				{
+					std::cout << "Microwave Broken!!!";
+					break;
+				}
+
 				if (microwaveState == MicrowaveState::IDLE) {
 
 					if (keypadClicked != "START" && keypadClicked != "STOP" && keypadClicked != "RESET") {

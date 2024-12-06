@@ -6,8 +6,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-//#include <ft2build.h>
-//#include FT_FREETYPE_H
+
 
 
 int windowWidth = 2000;  // Width of your window
@@ -89,11 +88,11 @@ GLfloat nameplateVertices[] = {
 float indicator = controlPanelWidth / 2 ;
 
 GLfloat smokeVertices[] = {
-	// Positions         // Colors
-	-1.0f, -1.0f,        0.1f, 0.1f, 0.1f,  // Bottom-left
-	-1.0f,  1.0f,        0.2f, 0.2f, 0.2f,  // Top-left
-	 1.0f, -1.0f,        0.0f, 0.0f, 0.0f,  // Bottom-right
-	 1.0f,  1.0f,        0.8f, 0.8f, 0.8f   // Top-right
+	// X    Y      R     G     B     U     V
+	-1.0f, -1.0f,  1.0f, 1.0f, 1.0f, 0.0f, 0.0f,  // Bottom-left
+	-1.0f,  1.0f,  1.0f, 1.0f, 1.0f, 0.0f, 1.0f, // Top-left
+	 1.0f,  1.0f,  1.0f, 1.0f, 1.0f, 1.0f, 1.0f, // Top-right
+	 1.0f, -1.0f,  1.0f, 1.0f, 1.0f, 1.0f, 0.0f // Bottom-right
 };
 
 GLfloat cavityVertices[] = {
@@ -197,8 +196,6 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
 
 		std::cout << "Mouse clicked at: NDC (" << xNDC << ", " << yNDC << ")\n";
 
-		// Check if click is within a button's area
-		//checkButtonClicked(xNDC, yNDC);
 	}
 }
 
@@ -220,130 +217,6 @@ void setupObject(VAO& vao, float* vertices, size_t verticesSize, unsigned int* i
 
 	vbo.Delete();
 	ebo.Delete();
-}
-
-// -------------------------------- BROKEN STATE DRAMATIC EFFECTS
-
-
-void handleBrokenState(float& light_intensity, float& smoke_scale, float& smoke_opacity,
-	MicrowaveState& microwaveState, float& sceneBrightness) {
-
-	static float flickerTimer = 0.0f;  // Timer for "ERROR" flickering
-	static float smokeOscillation = 0.0f; // Oscillation effect for smoke
-	static bool lightFlicker = true; // Simulates light flickering before turning off
-
-	if (sceneBrightness > 0.0f) {
-		sceneBrightness -= 0.005f; // Gradual dimming
-	}
-
-	if (smoke_scale < 1.8f) {
-		smoke_scale += 0.005f; // Smoke spreads faster
-	}
-	if (smoke_opacity < 1.0f) {
-		smoke_opacity += 0.02f; // Smoke becomes more visible
-	}
-
-	smokeOscillation += 0.1f;
-
-	if (smoke_opacity > 0.0f && smoke_scale >= 1.5f) {
-		smoke_opacity -= 0.01f; // Smoke fades slowly
-	}
-
-	if (light_intensity > 0.0f) {
-		if (lightFlicker) {
-			light_intensity -= 0.02f; // Reduce intensity
-			if (light_intensity <= 0.2f) {
-				lightFlicker = false;
-			}
-		}
-		else {
-			light_intensity += 0.02f; // Increase intensity
-			if (light_intensity >= 0.5f) {
-				lightFlicker = true;
-			}
-		}
-	}
-	else {
-		light_intensity = 0.0f; // Fully turn off light
-	}
-
-	flickerTimer += 0.05f;
-
-	if (sceneBrightness <= 0.0f) {
-		microwaveState = MicrowaveState::ERROR;
-	}
-}
-
-
-void handleRepairState(float& light_intensity, float& smoke_scale, float& smoke_opacity,
-	MicrowaveState& microwaveState, float& sceneBrightness) {
-	static float recoveryFlicker = 0.0f; // Flicker effect during recovery
-	static bool flickerDirection = true; // Flicker direction (increasing or decreasing)
-	static float recoveryOscillation = 0.0f; // Oscillation effect during recovery
-
-	// Gradually decrease light intensity to normal levels
-	if (light_intensity > 0.5f) {
-		light_intensity -= 0.006f; // Smoothly reduce intensity
-	}
-
-	// Flickering effect to signify recovery
-	if (flickerDirection) {
-		recoveryFlicker += 0.01f; // Increase flicker intensity
-		if (recoveryFlicker >= 0.05f) {
-			flickerDirection = false;
-		}
-	}
-	else {
-		recoveryFlicker -= 0.01f; // Decrease flicker intensity
-		if (recoveryFlicker <= -0.05f) {
-			flickerDirection = true;
-		}
-	}
-	sceneBrightness = std::min(1.0f, sceneBrightness + 0.005f + recoveryFlicker); // Brighten with flickering
-
-	// Decrease smoke effects when repairing
-	if (smoke_scale > 0.0f) {
-		smoke_scale -= 0.003f; // Shrink smoke gradually
-	}
-	if (smoke_opacity > 0.0f) {
-		smoke_opacity -= 0.02f; // Fade out smoke quickly
-	}
-
-	// Add gentle oscillations for a calming effect as the microwave recovers
-	recoveryOscillation += 0.05f;
-	float smokeOffsetX = sin(recoveryOscillation) * 0.01f; // Smooth side-to-side sway
-	float smokeOffsetY = cos(recoveryOscillation) * 0.005f; // Gentle vertical sway
-
-	// Check if all recovery conditions are met
-	if (light_intensity <= 0.5f && smoke_scale <= 0.0f && smoke_opacity <= 0.0f) {
-		microwaveState = MicrowaveState::IDLE; // Reset to normal state
-		sceneBrightness = 1.0f; // Restore full brightness
-	}
-
-	// Ensure no negative values for smoke or brightness
-	smoke_scale = std::max(0.0f, smoke_scale);
-	smoke_opacity = std::max(0.0f, smoke_opacity);
-	light_intensity = std::max(0.0f, light_intensity);
-}
-
-void updateMicrowaveState(bool& repairMicrowave,bool& isMicrowaveBroken,float& light_intensity,float& smoke_scale,float& smoke_opacity, MicrowaveState& microwaveState, float& sceneBrightness) {
-
-	if (repairMicrowave)
-	{
-		handleRepairState(light_intensity, smoke_scale, smoke_opacity, microwaveState, sceneBrightness);
-
-	}
-	else if (isMicrowaveBroken)
-	{
-		handleBrokenState(light_intensity, smoke_scale, smoke_opacity, microwaveState, sceneBrightness);
-
-	}
-}
-
-std::string formatTime(int remainingSeconds) {
-	int minutes = remainingSeconds / 60;
-	int seconds = remainingSeconds % 60;
-	return (minutes < 10 ? "0" : "") + std::to_string(minutes) + ":" + (seconds < 10 ? "0" : "") + std::to_string(seconds);
 }
 
 int main()
@@ -398,7 +271,7 @@ int main()
 	Shader lampShader("light.vert", "light.frag");
 	Shader smokeShader("smoke.vert", "smoke.frag");
 	Shader lightningShader("lightning.vert", "lightning.frag");
-
+	Shader textShader("text.vert", "text.frag");
 
 
 	// dobavi varijable 
@@ -407,9 +280,6 @@ int main()
 	GLboolean glassOnShader = glGetUniformLocation(glassShader.ID, "isGlass");
 	GLfloat lightIntensityLoc = glGetUniformLocation(lightningShader.ID, "lightning");
 	GLuint microwaveStateUniformLocation = glGetUniformLocation(indicatorShader.ID, "isMicrowaveRunning");
-
-
-
 
 	// Microwave (control Panel)
 	VAO controlPanelVAO;
@@ -512,7 +382,6 @@ int main()
 	glBindVertexArray(0);
 
 
-
 	// Texture
 	Texture microwave("../images/keyboard_sharp.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
 	microwave.assignUnit(defaultShader, "tex0", 0);
@@ -535,6 +404,9 @@ int main()
 	Texture smoke("../images/smoke.png", GL_TEXTURE_2D, GL_TEXTURE0, GL_RGBA, GL_UNSIGNED_BYTE);
 	smoke.assignUnit(defaultShader, "tex8", 8);
 
+	//Text timeRenderer("fonts/digital-7.ttf", &textShader, windowWidth, windowHeight);
+
+
 	glfwSetCursorPosCallback(window, mouseCallback);
 
 
@@ -549,32 +421,23 @@ int main()
 	double lastFrameTime = 0.0;  // Store the time of the last frame
 	double currentFrameTime = 0.0;
 	double deltaTime = 0.0;  // Store the time difference between frames
-	float indicatorTime = 0.0f;
 
 	static bool glassOn = true;
 	static bool glassOff = true;
-	static bool isLampOn = false;
+	static bool isLampOn = true;
 
 	static bool isMicrowaveBroken = false;
 	static bool XPressed = false;
 	static bool RPressed = false;
 
-	float smokeScale = 0.0f;
-	float lightIntensity = 0.0f;
 	float smokeOpacity = 0.0f;
-	float sceneBrightness = 1.0f;
+	float darknessLevel = 0.0f;
 
-	static bool shouldRepairMicrowave = false;
+	float flickerIntensity = (rand() % 2 == 0) ? 1.0f : 0.0f;  // Random flicker (0 or 1)
 
 	std::string timer = "00:00";
 	MicrowaveState microwaveState = MicrowaveState::IDLE;
-	MicrowaveState beforeState = MicrowaveState::IDLE;
 	DoorState doorState = DoorState::CLOSED;
-
-
-	float lastTime = 0.0f;
-
-
 
 	// --------------------------- MAIN WHILE LOOP
 	float timeValue = 0.0f;
@@ -594,16 +457,6 @@ int main()
 			glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-			if (microwaveState != beforeState) {
-
-				if (beforeState == MicrowaveState::ERROR) {
-					smokeScale = 0.7f;
-					smokeOpacity = 0.0f;
-				}
-
-				beforeState = microwaveState;
-			}
-
 			handleMicrowaveLogic(window, microwaveState, doorState, timer, isLampOn);
 
 			defaultShader.Activate();
@@ -611,16 +464,41 @@ int main()
 
 			drawObject(background, backgroundVAO);
 
-			if(isMicrowaveBroken)
-			{
+
+			// Gradually darken the scene if microwave is broken
+			if (isMicrowaveBroken) {
 				smokeShader.Activate();
 
-				glUniform1f(glGetUniformLocation(smokeShader.ID, "scale"), smokeScale);
+				glUniform1f(glGetUniformLocation(smokeShader.ID, "scale"), darknessLevel);
 				glUniform1f(glGetUniformLocation(smokeShader.ID, "opacity"), smokeOpacity);
+				glUniform1f(glGetUniformLocation(smokeShader.ID, "flickerIntensity"), flickerIntensity);  // Apply flicker
+
 
 				smoke.Bind();
 				smokeVAO.Bind();
 				glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)0);
+
+				isLampOn = false;
+				darknessLevel += 0.01f;
+				if (darknessLevel > 1.0f) darknessLevel = 1.0f;
+
+				smokeOpacity += 0.01f;
+				if (smokeOpacity > 1.0f) smokeOpacity = 1.0f;
+
+				flickerIntensity = (rand() % 2 == 0) ? 0.0f : 1.0f;
+
+
+				// Turn off the microwave after smoke opacity reaches full
+				if (smokeOpacity >= 1.0f) {
+					microwaveState = MicrowaveState::ERROR;
+				}
+
+				lightningShader.Activate();
+				glUniform1f(lightIntensityLoc, darknessLevel);
+
+				blackVAO.Bind();
+				glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)0);
+
 			}
 
 			defaultShader.Activate();
@@ -674,11 +552,8 @@ int main()
 			glUniform1i(microwaveStateUniformLocation, isRunning);
 			
 
-
 			indicatorVAO.Bind();
 			glDrawArrays(GL_TRIANGLE_FAN, 0, 4); // 4 vertices for a quad
-
-
 
 			////  ---------- DOOR 
 			doorShader.Activate();
@@ -692,57 +567,35 @@ int main()
 				XPressed = true;
 			}
 
-			// Handle R key (repair microwave)
+
 			if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS && !RPressed && microwaveState == MicrowaveState::ERROR) {
-				shouldRepairMicrowave = true;
+
+				isLampOn = true;
+				isMicrowaveBroken = false;  // Set broken state to false
 				RPressed = true;
+				microwaveState = MicrowaveState::IDLE;  // Set the microwave back to cooking state
+				isPaused = false;  // Unpause the microwave
+				timer = "00:00";  // Reset repair timer
+				std::cout << "Microwave repaired and scene restored.\n";
+			}
+			if (!isMicrowaveBroken) {
+
+
+				if (darknessLevel > 0.0f) {
+					darknessLevel -= 0.01f;
+					if (darknessLevel < 0.0f) darknessLevel = 0.0f;
+				}
+
+				lightningShader.Activate();
+				glUniform1f(lightIntensityLoc, darknessLevel);
+
+				blackVAO.Bind();
+				glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)0);
 			}
 
-			//updateMicrowaveState(shouldRepairMicrowave, isMicrowaveBroken, lightIntensity, smokeScale, smokeOpacity, microwaveState, sceneBrightness);
-
-			if (shouldRepairMicrowave) {
-
-				if (sceneBrightness >= 0.0f) {
-					sceneBrightness -= 0.006f;
-				}
-				else
-				{
-					isMicrowaveBroken = false;
-					microwaveState = MicrowaveState::IDLE;
-					shouldRepairMicrowave = false;
-					timer = "00:00";
-				}
-			}
-			else if (isMicrowaveBroken) {
-				if (sceneBrightness < 0.8f) {
-					sceneBrightness += 0.006f;
-				}
-				if (sceneBrightness > 0.79f) {
-					microwaveState = MicrowaveState::ERROR;
-				}
-			}
-
-			//lightningShader.Activate();
-			//glUniform1f(lightIntensityLoc, sceneBrightness);
-
-			//blackVAO.Bind();
-			//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)0);
+			//timeRenderer.RenderText(timer, 1360.0f, 200.0f, 1.2f, 0.5f, 0.7f, 1.0f);
 
 
-
-			if (shouldRepairMicrowave) {
-				if (smokeScale > 0.7f)
-					smokeScale -= 0.002f; // Smanji dim
-				if (smokeOpacity > 0.0f)
-					smokeOpacity -= 0.01f;
-			}
-			else if (isMicrowaveBroken) {
-				if (smokeScale < 1.4f)
-					smokeScale += 0.002f; // Povećavaj dim
-				if (smokeOpacity < 1.0f) {
-					smokeOpacity += 0.01f; // Smanji opacitet dima
-				}
-			}
 
 
 			if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)

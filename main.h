@@ -13,7 +13,8 @@
 #include "Texture.h"
 #include "door.h"
 #include "microwave.h"
-//#include "text.h"
+#include "text.h"
+
 
 struct MousePosition {
     float x;
