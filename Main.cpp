@@ -74,15 +74,23 @@ GLfloat indicatorVertices[] = {
 };
 
 float nameplateWidth = 0.7f;
-float nameplateHeight = 0.1f;
+float nameplateHeight = 0.25f;
 
+
+//GLfloat nameplateVertices[] = {
+//	// X              Y                R     G     B     U     V
+//	-nameplateWidth / 2, doorHeight / 2 + nameplateHeight, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f, // Top-left
+//	-nameplateWidth / 2, doorHeight / 2,                   1.0f, 1.0f, 1.0f, 0.0f, 0.0f, // Bottom-left
+//	 nameplateWidth / 2, doorHeight / 2,                   1.0f, 1.0f, 1.0f, 1.0f, 0.0f, // Bottom-right
+//	 nameplateWidth / 2, doorHeight / 2 + nameplateHeight, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f  // Top-right
+//};
 
 GLfloat nameplateVertices[] = {
-	// X              Y                R     G     B     U     V
-	-nameplateWidth / 2, doorHeight / 2 + nameplateHeight, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f, // Top-left
-	-nameplateWidth / 2, doorHeight / 2,                   1.0f, 1.0f, 1.0f, 0.0f, 0.0f, // Bottom-left
-	 nameplateWidth / 2, doorHeight / 2,                   1.0f, 1.0f, 1.0f, 1.0f, 0.0f, // Bottom-right
-	 nameplateWidth / 2, doorHeight / 2 + nameplateHeight, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f  // Top-right
+	// X                           Y                          R     G     B     U     V
+	-1.0f + nameplateWidth / 2, -1.0f + nameplateHeight,  1.0f, 1.0f, 1.0f, 0.0f, 1.0f, // Bottom-left
+	-1.0f + nameplateWidth / 2, -1.0f,                   1.0f, 1.0f, 1.0f, 0.0f, 0.0f, // Top-left
+	1.0f - nameplateWidth / 2, -1.0f,                     1.0f, 1.0f, 1.0f, 1.0f, 0.0f, // Top-right
+	1.0f - nameplateWidth / 2, -1.0f + nameplateHeight,  1.0f, 1.0f, 1.0f, 1.0f, 1.0f  // Bottom-right
 };
 
 float indicator = controlPanelWidth / 2 ;
@@ -505,7 +513,10 @@ int main()
 
 			drawObject(microwave, controlPanelVAO);
 
-			drawObject(namePlate, nameVAO);
+
+			namePlate.Bind();
+			nameVAO.Bind();
+			glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
 			drawObject(cavity, cavityVAO);
 

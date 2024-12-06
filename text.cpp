@@ -36,7 +36,7 @@
 //    shaderProgram->Activate();
 //    glUniformMatrix4fv(glGetUniformLocation(shaderProgram->ID, "projection"), 1, GL_FALSE, ProjectionMatrix);
 //}
-
+//
 //void Text::LoadCharacters(const std::string& fontPath) {
 //    FT_Library ft;
 //    FT_Face face;
@@ -73,7 +73,7 @@
 //    FT_Done_Face(face);
 //    FT_Done_FreeType(ft);
 //}
-
+//
 //void Text::RenderText(const std::string& text, float x, float y, float scale, float r, float g, float b) {
 //    shaderProgram->Activate();
 //    glUniform3f(glGetUniformLocation(shaderProgram->ID, "textColor"), r, g, b);

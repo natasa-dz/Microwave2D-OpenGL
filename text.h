@@ -31,6 +31,7 @@
 //    VBO VBO;
 //
 //    Text(const std::string& fontPath, Shader* shaderProgram, int screenWidth, int screenHeight);
+//    void LoadCharacters(const std::string& fontPath);
 //    void RenderText(const std::string& text, float x, float y, float scale, float r, float g, float b);
 //
 //private:

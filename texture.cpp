@@ -1,3 +1,5 @@
+#include <freetype/ftimage.h>
+
 #include"Texture.h"
 #include "../libraries/include/stb/stb_image.h"
 
