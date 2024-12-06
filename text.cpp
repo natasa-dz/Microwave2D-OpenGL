@@ -22,7 +22,6 @@
 //    VAO.Unbind();
 //    VBO.Unbind();
 //
-//    // Kreiranje ortogonalne projekcije
 //    for (int i = 0; i < 16; i++)
 //        ProjectionMatrix[i] = 0.0f;
 //

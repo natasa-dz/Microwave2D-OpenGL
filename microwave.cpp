@@ -106,34 +106,6 @@ void updateTimer(std::string& timer, int number) {
 	timer = (minutes < 10 ? "0" : "") + std::to_string(minutes) + ":" +
 		(seconds < 10 ? "0" : "") + std::to_string(seconds);
 }
-//void countdownTimer(MicrowaveState& microwaveState, std::string& timer) {
-//	if (microwaveState == MicrowaveState::COOKING) {
-//		std::cout << "\n---------------- Countdown Started -------------------" << "\n";
-//
-//		while (timer != "00:00") {
-//			int minutes = std::stoi(timer.substr(0, 2));
-//			int seconds = std::stoi(timer.substr(3, 2));
-//
-//			if (seconds > 0) {
-//				seconds--;
-//			}
-//			else if (minutes > 0) {
-//				minutes--;
-//				seconds = 59;  // Reset seconds to 59 when a minute is subtracted
-//			}
-//
-//			// Update the timer string
-//			timer = (minutes < 10 ? "0" : "") + std::to_string(minutes) + ":" + (seconds < 10 ? "0" : "") + std::to_string(seconds);
-//
-//			// Print the timer value
-//			std::cout << "Timer: " << timer << std::endl;
-//
-//		}
-//
-//		microwaveState = MicrowaveState::DONE;
-//		std::cout << "Microwave timer done! Timer: " << timer << std::endl;
-//	}
-//}
 
 void countdownTimer(std::string& timer, MicrowaveState& microwaveState) {
 	while (isRunning) {

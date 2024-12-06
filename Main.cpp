@@ -76,15 +76,6 @@ GLfloat indicatorVertices[] = {
 float nameplateWidth = 0.7f;
 float nameplateHeight = 0.25f;
 
-
-//GLfloat nameplateVertices[] = {
-//	// X              Y                R     G     B     U     V
-//	-nameplateWidth / 2, doorHeight / 2 + nameplateHeight, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f, // Top-left
-//	-nameplateWidth / 2, doorHeight / 2,                   1.0f, 1.0f, 1.0f, 0.0f, 0.0f, // Bottom-left
-//	 nameplateWidth / 2, doorHeight / 2,                   1.0f, 1.0f, 1.0f, 1.0f, 0.0f, // Bottom-right
-//	 nameplateWidth / 2, doorHeight / 2 + nameplateHeight, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f  // Top-right
-//};
-
 GLfloat nameplateVertices[] = {
 	// X                           Y                          R     G     B     U     V
 	-1.0f + nameplateWidth / 2, -1.0f + nameplateHeight,  1.0f, 1.0f, 1.0f, 0.0f, 1.0f, // Bottom-left
@@ -435,8 +426,6 @@ int main()
 	static bool isLampOn = true;
 
 	static bool isMicrowaveBroken = false;
-	static bool XPressed = false;
-	static bool RPressed = false;
 
 	float smokeOpacity = 0.0f;
 	float darknessLevel = 0.0f;
@@ -573,17 +562,14 @@ int main()
 
 
 			// Handle X key (break microwave)
-			if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS && !XPressed) {
-				isMicrowaveBroken = true;
-				XPressed = true;
-			}
+			if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS) {
+				isMicrowaveBroken = true;}
 
 
-			if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS && !RPressed && microwaveState == MicrowaveState::ERROR) {
+			if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS && microwaveState == MicrowaveState::ERROR) {
 
 				isLampOn = true;
 				isMicrowaveBroken = false;  // Set broken state to false
-				RPressed = true;
 				microwaveState = MicrowaveState::IDLE;  // Set the microwave back to cooking state
 				isPaused = false;  // Unpause the microwave
 				timer = "00:00";  // Reset repair timer
@@ -604,9 +590,17 @@ int main()
 				glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)0);
 			}
 
-			//timeRenderer.RenderText(timer, 1360.0f, 200.0f, 1.2f, 0.5f, 0.7f, 1.0f);
 
+			float height = 0.026;
+			float width = 0.119;
+			float center_x = 0.5055;
+			float center_y = 0.213;
+			// Calculate text position (convert normalized to pixel coordinates)
+			float pixelX = 1360.0f * center_x; // Replace 1360.0f with window width
+			float pixelY = 200.0f * center_y;  // Replace 200.0f with window height
 
+			// Render the timer text
+			//timeRenderer.RenderText(timer, pixelX, pixelY, height, 0.5f, 0.7f, 1.0f);
 
 
 			if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)

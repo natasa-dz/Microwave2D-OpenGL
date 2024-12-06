@@ -1,6 +1,6 @@
 #include <freetype/ftimage.h>
 
-#include"Texture.h"
+#include"texture.h"
 #include "../libraries/include/stb/stb_image.h"
 
 Texture::Texture(const char* image, GLenum texType, GLenum slot, GLenum format, GLenum pixelType)
