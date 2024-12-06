@@ -14,6 +14,10 @@ enum class MicrowaveState {
 	ERROR       // Microwave encountered an error (e.g., overheating or malfunction)
 };
 
+extern std::atomic<bool> isRunning;  // Atomic flag to check if the timer is running
+extern std::atomic<bool> isPaused;  // Atomic flag to check if the timer is paused
+
+
 // Struct to hold smoke properties
 struct Smoke {
 	float opacity; // Opacity of the smoke
@@ -36,7 +40,8 @@ void breakMicrowaveAndStartSmoke(GLFWwindow* window, MicrowaveState& microwaveSt
 void handleMicrowaveLogic(GLFWwindow* window, MicrowaveState& microwaveState, DoorState& doorState,
 	std::string& timer, bool& isLampOn);
 void updateTimer(std::string& timer, int num);
-void countdownTimer(MicrowaveState& microwaveState, std::string& timer);
+//void countdownTimer(MicrowaveState& microwaveState, std::string& timer);
+void countdownTimer(std::string& timer, MicrowaveState& microwaveState);
 bool updateTimer(std::string& timer);
 
 #endif

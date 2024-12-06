@@ -178,7 +178,7 @@ void mouseCallback(GLFWwindow* window, double mouseX, double mouseY) {
 	mousePos.x = (2.0f * mouseX) / windowWidth - 1.0f;
 	mousePos.y = 1.0f - (2.0f * mouseY) / windowHeight;
 
-	std::cout << "Mouse clicked at: NDC (" << mousePos.x << ", " << mousePos.y << ")\n";
+	//std::cout << "Mouse clicked at: NDC (" << mousePos.x << ", " << mousePos.y << ")\n";
 
 
 }
@@ -403,9 +403,11 @@ int main()
 
 	// dobavi varijable 
 	GLuint uniID = glGetUniformLocation(defaultShader.ID, "scale");
-	GLuint indicatorTimeShader = glGetUniformLocation(indicatorShader.ID, "time");
+	GLuint timeUniformLocation = glGetUniformLocation(indicatorShader.ID, "time");
 	GLboolean glassOnShader = glGetUniformLocation(glassShader.ID, "isGlass");
 	GLfloat lightIntensityLoc = glGetUniformLocation(lightningShader.ID, "lightning");
+	GLuint microwaveStateUniformLocation = glGetUniformLocation(indicatorShader.ID, "isMicrowaveRunning");
+
 
 
 
@@ -574,7 +576,9 @@ int main()
 
 
 
-	// --------------------------- MAIN WHILE LOOP 
+	// --------------------------- MAIN WHILE LOOP
+	float timeValue = 0.0f;
+
 
 	while (!glfwWindowShouldClose(window)) {
 		currentFrameTime = glfwGetTime();
@@ -584,6 +588,8 @@ int main()
 		if (deltaTime >= TARGET_FRAME_TIME) {
 
 			lastFrameTime = currentFrameTime;
+			timeValue += 0.16f;
+
 
 			glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -598,6 +604,7 @@ int main()
 				beforeState = microwaveState;
 			}
 
+			handleMicrowaveLogic(window, microwaveState, doorState, timer, isLampOn);
 
 			defaultShader.Activate();
 			glUniform1f(uniID, 0.5f);
@@ -623,8 +630,6 @@ int main()
 			drawObject(namePlate, nameVAO);
 
 			drawObject(cavity, cavityVAO);
-
-			glUniform1f(indicatorTimeShader, indicatorTime);
 
 			drawObject(plate, plateVAO);
 
@@ -660,9 +665,16 @@ int main()
 			glassVAO.Bind();
 			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)0);
 
-
 			// ----------- LED INDICATOR
 			indicatorShader.Activate();
+			// Pass the time value to the shader
+			glUniform1f(timeUniformLocation, timeValue);
+
+			// Pass the microwave state to the shader (whether it's running or not)
+			glUniform1i(microwaveStateUniformLocation, isRunning);
+			
+
+
 			indicatorVAO.Bind();
 			glDrawArrays(GL_TRIANGLE_FAN, 0, 4); // 4 vertices for a quad
 
@@ -672,26 +684,6 @@ int main()
 			doorShader.Activate();
 			glUniform1f(glGetUniformLocation(doorShader.ID, "doorOffset"), doorOffset);
 			drawObject(door, doorVAO);
-
-
-
-			//if (microwaveState == MicrowaveState::COOKING)
-			//	indicatorTime += 0.1f;
-			//else if (microwaveState == MicrowaveState::DONE)
-			//	indicatorTime = -1.0f;
-			//else
-			//	indicatorTime = 1.0f;
-
-			//if (microwaveState == MicrowaveState::COOKING) {
-			//	if (currentFrameTime - lastTime >= 1.0f) {
-			//		if (updateTimer(timer)) {	
-			//			microwaveState = MicrowaveState::DONE;
-			//		}
-			//		lastTime = currentFrameTime;
-			//	}
-			//}
-
-			handleMicrowaveLogic(window, microwaveState, doorState, timer, isLampOn);
 
 
 			// Handle X key (break microwave)

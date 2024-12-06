@@ -2,12 +2,17 @@
 
 out vec4 FragColor;
 
-uniform float time;
+uniform float time;  // Time value passed from the main program
+uniform bool isMicrowaveRunning;  // Microwave running state
 
 void main() {
-    float intensity = 0.5 - 0.5 * sin(time * 1.7);
-    FragColor = vec4(intensity - 0.1, 0.0, 0.0, 1.0);
+    float brightness = 0.0;
+
+    if (isMicrowaveRunning) {
+        // Calculate pulsating brightness (oscillates between 0.0 and 1.0)
+        brightness = (sin(time * 2.0) + 1.0) / 2.0;
+    }
+
+    // Set the color of the indicator to pulsate red (with brightness)
+    FragColor = vec4(brightness, 0.0, 0.0, 1.0);  // Red channel pulsates, green and blue are 0
 }
-
-
-

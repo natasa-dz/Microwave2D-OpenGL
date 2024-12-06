@@ -1,9 +1,17 @@
 #include <iostream>
+#include <thread>  // For creating threads
+#include <atomic>  // For atomic flags (to prevent race conditions)
+#include <chrono>  // For time durations (milliseconds)
+#include <mutex>  // For thread synchronization
 #include "microwave.h"
 #include "main.h"
-#include <vector>  // Include this header for std::vector
-#include <thread>  // Include the thread header to use std::this_thread::sleep_for
-#include <GLFW/glfw3.h>  // Make sure GLFW is included here
+#include <vector>
+#include <GLFW/glfw3.h>
+
+std::atomic<bool>isRunning(false);  // Atomic flag to check if the timer is running
+std::atomic<bool> isPaused(false);  // Atomic flag to check if the timer is paused
+
+std::mutex timerMutex;  // Mutex to protect shared timer state
 
 
 struct Button {
@@ -27,6 +35,8 @@ std::vector<Button> buttons = {
     {"0", 0.49f, 0.51f, -0.2f, -0.166f},  // Button 0
     {"START", 0.53f, 0.63f, -0.28f, -0.21f},  // Start Button
     {"STOP", 0.43f, 0.5f, -0.28f, -0.21f},  // Stop Button
+	{"RESET", 0.473f, 0.531f, 0.12f, 0.155f},  // Stop Button
+
 };
 
 bool isInsideRectangle(float x, float y, float xMin, float xMax, float yMin, float yMax) {
@@ -78,59 +88,72 @@ bool updateTimer(std::string& timer) {
 }
 
 void updateTimer(std::string& timer, int number) {
-	// Extract current minutes and seconds from the timer
 	int minutes = std::stoi(timer.substr(0, 2));
 	int seconds = std::stoi(timer.substr(3, 2));
 
-	// If we are still filling the minutes part (first two digits)
-	if (seconds < 60) {
-		seconds = seconds * 10 + number;  // Add digit to seconds
+	seconds = seconds * 10 + number;
+
+	while (seconds >= 60) {  // Adjust seconds to fit within mm:ss
+		minutes++;
+		seconds -= 60;
 	}
 
-	// If seconds exceed 59, move to minutes
-	if (seconds >= 60) {
-		seconds = 0;  // Reset seconds to 0
-		minutes += 1; // Add 1 minute
+	if (minutes > 99) {  // Cap minutes to 99
+		minutes = 99;
+		seconds = 59;
 	}
 
-	// Format the updated timer as mm:ss
-	timer = (minutes < 10 ? "0" : "") + std::to_string(minutes) + ":"
-		+ (seconds < 10 ? "0" : "") + std::to_string(seconds);
-
-	//std::cout << timer<<"\n";
+	timer = (minutes < 10 ? "0" : "") + std::to_string(minutes) + ":" +
+		(seconds < 10 ? "0" : "") + std::to_string(seconds);
 }
+//void countdownTimer(MicrowaveState& microwaveState, std::string& timer) {
+//	if (microwaveState == MicrowaveState::COOKING) {
+//		std::cout << "\n---------------- Countdown Started -------------------" << "\n";
+//
+//		while (timer != "00:00") {
+//			int minutes = std::stoi(timer.substr(0, 2));
+//			int seconds = std::stoi(timer.substr(3, 2));
+//
+//			if (seconds > 0) {
+//				seconds--;
+//			}
+//			else if (minutes > 0) {
+//				minutes--;
+//				seconds = 59;  // Reset seconds to 59 when a minute is subtracted
+//			}
+//
+//			// Update the timer string
+//			timer = (minutes < 10 ? "0" : "") + std::to_string(minutes) + ":" + (seconds < 10 ? "0" : "") + std::to_string(seconds);
+//
+//			// Print the timer value
+//			std::cout << "Timer: " << timer << std::endl;
+//
+//		}
+//
+//		microwaveState = MicrowaveState::DONE;
+//		std::cout << "Microwave timer done! Timer: " << timer << std::endl;
+//	}
+//}
 
+void countdownTimer(std::string& timer, MicrowaveState& microwaveState) {
+	while (isRunning) {
+		std::this_thread::sleep_for(std::chrono::seconds(1));
 
-void countdownTimer(MicrowaveState& microwaveState, std::string& timer) {
-	if (microwaveState == MicrowaveState::COOKING) {
-		std::cout << "\n---------------- Countdown Started -------------------" << "\n";
-
-		while (timer != "00:00") {
-			int minutes = std::stoi(timer.substr(0, 2));
-			int seconds = std::stoi(timer.substr(3, 2));
-
-			if (seconds > 0) {
-				seconds--;
-			}
-			else if (minutes > 0) {
-				minutes--;
-				seconds = 59;  // Reset seconds to 59 when a minute is subtracted
-			}
-
-			// Update the timer string
-			timer = (minutes < 10 ? "0" : "") + std::to_string(minutes) + ":" + (seconds < 10 ? "0" : "") + std::to_string(seconds);
-
-			// Print the timer value
-			std::cout << "Timer: " << timer << std::endl;
-
-			// Introduce a 1-second delay before the next print
-			//std::this_thread::sleep_for(std::chrono::seconds(1));
+		if (isPaused) {
+			continue;
 		}
 
-		microwaveState = MicrowaveState::DONE;
-		std::cout << "Microwave timer done! Timer: " << timer << std::endl;
+		std::lock_guard<std::mutex> lock(timerMutex);  // Lock before accessing shared state
+		bool timeUp = updateTimer(timer);
+		std::cout << "Time remaining: " << timer << std::endl;
+
+		if (timeUp) {
+			microwaveState = MicrowaveState::DONE;
+			isRunning = false;
+		}
 	}
 }
+
 
 
 void handleMicrowaveLogic(GLFWwindow* window, MicrowaveState& microwaveState, DoorState& doorState,
@@ -165,24 +188,52 @@ void handleMicrowaveLogic(GLFWwindow* window, MicrowaveState& microwaveState, Do
 					}
 				}
 
-				if (keypadClicked == "START" && isValidTime(timer) && (microwaveState == MicrowaveState::IDLE || microwaveState == MicrowaveState::DONE)) {
-					microwaveState = MicrowaveState::COOKING;
-					isLampOn = true;
-					countdownTimer(microwaveState, timer);
+				if (keypadClicked == "START" && isValidTime(timer)) {
+					isPaused = false;  // Resume countdown
+					if (!isRunning) {  // Start a new countdown if not already running
+						isRunning = true;
+						microwaveState = MicrowaveState::COOKING;
+						isLampOn = true;
+						std::thread countdownThread(countdownTimer, std::ref(timer), std::ref(microwaveState));
+						countdownThread.detach();  // Detach thread to run independently
+					}
+					else {
+						std::cout << "Resuming countdown..." << std::endl;
+						isLampOn = true;
 
+					}
 				}
 
+
 				else if (keypadClicked == "RESET") {
+					
+					std::lock_guard<std::mutex> lock(timerMutex);
+					isPaused = false;
 					microwaveState = MicrowaveState::IDLE;
 					timer = "00:00";
+					isLampOn = false;
 					std::cout << "Microwave reset!" << std::endl;
 				}
 
-				else if (keypadClicked == "STOP" && microwaveState == MicrowaveState::COOKING) {
-					microwaveState = MicrowaveState::PAUSED;
-					std::cout << "Microwave paused!" << std::endl;
-				}
 
+				else if (keypadClicked == "STOP" && microwaveState == MicrowaveState::COOKING) {
+					if (isPaused) {
+						// Resume the countdown
+						isLampOn = true;
+						isPaused = false;
+						isRunning = false;
+						microwaveState = MicrowaveState::COOKING;
+						std::cout << "Microwave resumed!" << std::endl;
+					}
+					else {
+						// Pause the countdown
+						isPaused = true;
+						isLampOn = false;
+
+						microwaveState = MicrowaveState::PAUSED;
+						std::cout << "Microwave paused!" << std::endl;
+					}
+				}
 				// Timer countdown logic for COOKING state
 				else if (microwaveState == MicrowaveState::COOKING) {
 					if (updateTimer(timer)) {
